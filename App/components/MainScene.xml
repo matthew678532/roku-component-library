@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MainScene" extends="Scene">
+  <script type="text/brightscript" uri="MainScene.brs" />
+
+  <interface>
+    <function name="getChannelPerformanceBeaconIds" />
+    <function name="getChannelPerformanceBeaconTypes" />
+    <function name="sendChannelPerformanceBeacon" />
+  </interface>
+
+  <children>
+    <ChannelPerformanceComponent id="channelPerformanceComponent" />
+  </children>
+</component>

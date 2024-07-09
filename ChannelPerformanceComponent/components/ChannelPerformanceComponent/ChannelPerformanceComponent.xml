@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="ChannelPerformanceComponent" extends="Node">
+  <script type="text/brightscript" uri="ChannelPerformanceComponent.brs" />
+
+  <interface>
+    <field id="beaconIds" type="assocArray" />
+    <field id="beaconTypes" type="assocArray" />
+
+    <function name="sendBeacon" />
+  </interface>
+</component>
