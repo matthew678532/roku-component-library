@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="Test__ChannelPerformanceComponent" extends="ChannelPerformanceComponent">
+  <script type="text/brightscript" uri="pkg:/source/testFramework/UnitTestFramework.brs" />
+  <script type="text/brightscript" uri="Test__ChannelPerformanceComponent__Suite.brs" />
+  <script type="text/brightscript" uri="Test__ChannelPerformanceComponent.brs" />
+
+  <interface>
+    <function name="TestFramework__RunNodeTests" />
+  </interface>
+</component>

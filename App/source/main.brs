@@ -7,7 +7,7 @@ sub main(args as Object)
 
   if args.runTests = "true" and TF_Utils__IsFunction(TestRunner)
     runner = TestRunner()
-    runner.logger.setVerbosity(3)
+    runner.logger.setVerbosity(2)
     runner.logger.setEcho(false)
     runner.logger.setJUnit(false)
     runner.run()
