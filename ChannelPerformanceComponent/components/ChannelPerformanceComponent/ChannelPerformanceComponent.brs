@@ -1,16 +1,18 @@
 sub init()
-  m.msSinceAppLaunchInitiateBeacon = createObject("roDateTime").toSeconds() * 1000
-  m.scene = m.top.getParent()
+  m.scene = m.top.getScene()
 
   m.beaconIds = {
     epgLaunch: "EpgLaunch",
     appDialog: "AppDialog",
-    appLaunch: "AppLaunch"
+    appLaunch: "AppLaunch",
+    appLaunchCustom: "AppLaunchCustom"
   }
+  m.top.beaconIds = m.beaconIds
   m.beaconTypes = {
     initiate: "Initiate",
     complete: "Complete"
   }
+  m.top.beaconTypes = m.beaconTypes
   m.baseBeaconFormat = {
     initiate: {
       timebase: Invalid
@@ -26,6 +28,7 @@ sub init()
   m.requiredBeacons[m.beaconIds.appLaunch] = m.baseBeaconFormat
 
   m.customBeacons = {}
+  m.customBeacons[m.beaconIds.appLaunchCustom] = m.baseBeaconFormat
 
   m.beacons = {}
   m.beacons.append(m.requiredBeacons)
@@ -36,7 +39,7 @@ sub sendBeacon(beaconId as String, beaconType as String)
   beacon = m.beacons[beaconId]
 
   if beacon = Invalid
-    print "Unsupported beacon, not sending"
+    print "[ChannelPerformanceComponent] Unsupported beacon (" + beaconId + "), not sending"
 
     return
   end if
@@ -44,7 +47,7 @@ sub sendBeacon(beaconId as String, beaconType as String)
   beaconByType = beacon[beaconType]
 
   if beaconByType = Invalid
-    print "Unknown beacon by type, not sending"
+    print "[ChannelPerformanceComponent] Unknown beacon by type (" + beaconId + ", " + beaconType + "), not sending"
 
     return
   end if
@@ -54,7 +57,7 @@ sub sendBeacon(beaconId as String, beaconType as String)
   appLaunchBeacon = beaconId = m.beaconIds.appLaunch
 
   if completeBeacon and noInitiate and not appLaunchBeacon
-    print "Attempting to send complete beacon without initiate, not sending"
+    print "[ChannelPerformanceComponent] Attempting to send complete beacon (" + beaconId + ") without initiate, not sending"
 
     return
   end if
@@ -63,7 +66,7 @@ sub sendBeacon(beaconId as String, beaconType as String)
   requiredBeacon = m.requiredBeacons[beaconId]
 
   if beaconType = m.beaconTypes.initiate
-    timebase = (beaconDateTime.toSeconds() * 1000) - m.msSinceAppLaunchInitiateBeacon
+    timebase = beaconDateTime.asSeconds() * 1000
     m.beacons[beaconId][beaconType].timebase = timebase
 
     if requiredBeacon <> Invalid
@@ -74,10 +77,13 @@ sub sendBeacon(beaconId as String, beaconType as String)
 
     initiateString = "Timebase({timebase} ms)"
 
-    print getBaseBeaconString() + initiateString.replace("{timebase}", timebase.toStr())
+    print getBaseBeaconString(beaconDateTime, beaconId, beaconType) + initiateString.replace("{timebase}", timebase.toStr())
   else
     timebase = beacon.initiate.timebase
-    duration = (beaconDateTime.toSeconds() * 1000) - timebase
+    if timebase = Invalid
+      timebase = beaconDateTime.asSeconds() * 1000
+    end if
+    duration = (beaconDateTime.asSeconds() * 1000) - timebase
     m.beacons[beaconId][beaconType].duration = duration
 
     if requiredBeacon <> Invalid
@@ -89,17 +95,17 @@ sub sendBeacon(beaconId as String, beaconType as String)
 
     completeString = "Duration({duration} ms)"
 
-    print getBaseBeaconString() + completeString.replace("{duration}", duration.toStr())
+    print getBaseBeaconString(beaconDateTime, beaconId, beaconType) + completeString.replace("{duration}", duration.toStr())
 
     resetBeacon(beaconId)
   end if
 end sub
 
-function getBaseBeaconString(beaconDateTime as String, beaconId as String, beaconType as String) as String
-  baseBeaconString = "{day}-{month} {hour}:{minute}:{second}.{millisecond} [beacon.signal.custom] |{beaconId}{beaconType} ---------> "
+function getBaseBeaconString(beaconDateTime as Object, beaconId as String, beaconType as String) as String
+  baseBeaconString = "{month}-{day} {hour}:{minute}:{second}.{millisecond} [beacon.signal.custom] |{beaconId}{beaconType} ---------> "
 
-  day = padTimeUnit(beaconDateTime.getDayOfMonth())
   month = padTimeUnit(beaconDateTime.getMonth())
+  day = padTimeUnit(beaconDateTime.getDayOfMonth())
 
   hour = padTimeUnit(beaconDateTime.getHours())
   minute = padTimeUnit(beaconDateTime.getMinutes())
@@ -109,7 +115,7 @@ function getBaseBeaconString(beaconDateTime as String, beaconId as String, beaco
   return baseBeaconString.replace("{day}", day).replace("{month}", month).replace("{hour}", hour).replace("{minute}", minute).replace("{second}", second).replace("{millisecond}", millisecond).replace("{beaconId}", beaconId).replace("{beaconType}", beaconType)
 end function
 
-function padTimeUnit(timeUnit as Int) as String
+function padTimeUnit(timeUnit as Integer) as String
   if timeUnit < 10
     return "0" + timeUnit.toStr()
   end if

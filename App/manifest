@@ -1,8 +1,10 @@
-title=App
-subtitle=Test bed for the components
+title=Test application
 major_version=0
 minor_version=0
 build_version=0
-splash_color=#808080
 splash_min_time=0
+splash_screen_hd=pkg:/images/test_application_splash_hd.jpg
+splash_screen_fhd=pkg:/images/test_application_splash_fhd.jpg
+mm_icon_focus_hd=pkg:/images/test_application_icon_hd.jpg
+mm_icon_focus_fhd=pkg:/images/test_application_icon_fhd.jpg
 ui_resolutions=fhd
