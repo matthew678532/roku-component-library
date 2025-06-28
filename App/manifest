@@ -8,3 +8,4 @@ splash_screen_fhd=pkg:/images/test_application_splash_fhd.jpg
 mm_icon_focus_hd=pkg:/images/test_application_icon_hd.jpg
 mm_icon_focus_fhd=pkg:/images/test_application_icon_fhd.jpg
 ui_resolutions=fhd
+bs_const=runTests=false

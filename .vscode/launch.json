@@ -7,7 +7,27 @@
       "name": "Debug",
       "host": "${promptForHost}",
       "password": "${promptForPassword}",
-      "rootDir": "${workspaceFolder}/app",
+      "rootDir": "${workspaceFolder}/App",
+      "files": [
+        "components/**/*",
+        "source/**/*",
+        "images/**/*",
+        "manifest",
+        {
+          "src": "../ChannelPerformanceComponent/components/ChannelPerformanceComponent/**/*",
+          "dest": "components/ChannelPerformanceComponent/"
+        },
+        "!source/testFramework/**/*"
+      ],
+      "retainStagingFolder": true
+    },
+    {
+      "type": "brightscript",
+      "request": "launch",
+      "name": "Test",
+      "host": "${promptForHost}",
+      "password": "${promptForPassword}",
+      "rootDir": "${workspaceFolder}/App",
       "files": [
         "components/**/*",
         "source/**/*",
@@ -17,7 +37,11 @@
           "src": "../ChannelPerformanceComponent/components/**/*",
           "dest": "components/"
         }
-      ]
+      ],
+      "retainStagingFolder": true,
+      "bsConst": {
+        "runTests": true
+      },
     }
   ]
 }

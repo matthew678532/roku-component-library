@@ -5,13 +5,16 @@ sub main(args as Object)
   screen.setMessagePort(m.port)
   screen.show()
 
-  if args.runTests = "true" and TF_Utils__IsFunction(TestRunner)
-    runner = TestRunner()
-    runner.logger.setVerbosity(2)
-    runner.logger.setEcho(false)
-    runner.logger.setJUnit(false)
-    runner.run()
-  end if
+
+  # if runTests
+    if TF_Utils__IsFunction(TestRunner)
+      runner = TestRunner()
+      runner.logger.setVerbosity(2)
+      runner.logger.setEcho(false)
+      runner.logger.setJUnit(false)
+      runner.run()
+    end if
+  # end if
 
   while true
     msg = wait(0, m.port)
