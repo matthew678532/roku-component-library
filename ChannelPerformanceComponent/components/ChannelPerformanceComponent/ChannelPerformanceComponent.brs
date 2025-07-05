@@ -35,13 +35,13 @@ sub init()
   m.beacons.append(m.customBeacons)
 end sub
 
-sub sendBeacon(beaconId as String, beaconType as String)
+function sendBeacon(beaconId as String, beaconType as String) as Object
   beacon = m.beacons[beaconId]
 
   if beacon = Invalid
     print "[ChannelPerformanceComponent] Unsupported beacon (" + beaconId + "), not sending"
 
-    return
+    return getSendBeaconResponseObject("error", "Unsupported beacon", { beaconId: beaconId, beaconType: beaconType })
   end if
 
   beaconByType = beacon[beaconType]
@@ -49,7 +49,7 @@ sub sendBeacon(beaconId as String, beaconType as String)
   if beaconByType = Invalid
     print "[ChannelPerformanceComponent] Unknown beacon by type (" + beaconId + ", " + beaconType + "), not sending"
 
-    return
+    return getSendBeaconResponseObject("error", "Unknown beacon by type", { beaconId: beaconId, beaconType: beaconType })
   end if
 
   completeBeacon = beaconType = m.beaconTypes.complete
@@ -59,7 +59,7 @@ sub sendBeacon(beaconId as String, beaconType as String)
   if completeBeacon and noInitiate and not appLaunchBeacon
     print "[ChannelPerformanceComponent] Attempting to send complete beacon (" + beaconId + ") without initiate, not sending"
 
-    return
+    return getSendBeaconResponseObject("error", "Attempting to send complete beacon without initiate", { beaconId: beaconId, beaconType: beaconType })
   end if
 
   beaconDateTime = createObject("roDateTime")
@@ -72,12 +72,14 @@ sub sendBeacon(beaconId as String, beaconType as String)
     if requiredBeacon <> Invalid
       m.scene.signalBeacon(beaconId + beaconType)
 
-      return
+      return getSendBeaconResponseObject("success", "Beacon sent by OS", { beaconId: beaconId, beaconType: beaconType })
     end if
 
     initiateString = "Timebase({timebase} ms)"
 
-    print getBaseBeaconString(beaconDateTime, beaconId, beaconType) + initiateString.replace("{timebase}", timebase.toStr())
+    returnString = getBaseBeaconString(beaconDateTime, beaconId, beaconType) + initiateString.replace("{timebase}", timebase.toStr())
+    print returnString
+    return getSendBeaconResponseObject("success", returnString, { beaconId: beaconId, beaconType: beaconType })
   else
     timebase = beacon.initiate.timebase
     if timebase = Invalid
@@ -90,16 +92,18 @@ sub sendBeacon(beaconId as String, beaconType as String)
       m.scene.signalBeacon(beaconId + beaconType)
       resetBeacon(beaconId)
 
-      return
+      return getSendBeaconResponseObject("success", "Beacon sent by OS", { beaconId: beaconId, beaconType: beaconType })
     end if
 
     completeString = "Duration({duration} ms)"
 
-    print getBaseBeaconString(beaconDateTime, beaconId, beaconType) + completeString.replace("{duration}", duration.toStr())
+    returnString = getBaseBeaconString(beaconDateTime, beaconId, beaconType) + completeString.replace("{duration}", duration.toStr())
+    print returnString
 
     resetBeacon(beaconId)
+    return getSendBeaconResponseObject("success", returnString, { beaconId: beaconId, beaconType: beaconType })
   end if
-end sub
+end function
 
 function getBaseBeaconString(beaconDateTime as Object, beaconId as String, beaconType as String) as String
   baseBeaconString = "{month}-{day} {hour}:{minute}:{second}.{millisecond} [beacon.signal.custom] |{beaconId}{beaconType} ---------> "
@@ -127,3 +131,20 @@ sub resetBeacon(beaconId as String)
   m.beacons[beaconId].initiate.timebase = Invalid
   m.beacons[beaconId].complete.duration = Invalid
 end sub
+
+function getSendBeaconResponseObject(status as String, message as String, args as Object) as Object
+  statuses = {
+    "error": "error",
+    "success": "success"
+  }
+  finalStatus = statuses[status]
+  if finalStatus = Invalid
+    finalStatus = "error"
+  end if
+
+  return {
+    "status": finalStatus,
+    "message": message,
+    "args": args
+  }
+end function

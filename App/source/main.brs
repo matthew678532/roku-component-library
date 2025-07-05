@@ -5,14 +5,15 @@ sub main(args as Object)
   screen.setMessagePort(m.port)
   screen.show()
 
-
   # if runTests
     if TF_Utils__IsFunction(TestRunner)
       runner = TestRunner()
-      runner.logger.setVerbosity(2)
+      runner.logger.setVerbosity(3)
       runner.logger.setEcho(false)
       runner.logger.setJUnit(false)
       runner.run()
+
+      return
     end if
   # end if
 
