@@ -15,6 +15,7 @@ function TestSuite__ChannelPerformanceComponent__Suite() as Object
   this.addTest("TestCase__SendBeacon__CompleteCustom", TestCase__SendBeacon__CompleteCustom, TestCase__SendBeacon__CompleteCustom__Setup)
   this.addTest("TestCase__SendBeacon__InitiateCustomMessageStructure", TestCase__SendBeacon__InitiateCustomMessageStructure)
   this.addTest("TestCase__SendBeacon__CompleteCustomMessageStructure", TestCase__SendBeacon__CompleteCustomMessageStructure, TestCase__SendBeacon__CompleteCustomMessageStructure__Setup)
+  this.addTest("TestCase__SendBeacon__InitiateCustomDisabled", TestCase__SendBeacon__InitiateCustomDisabled)
 
   return this
 end function
@@ -158,4 +159,15 @@ function TestCase__SendBeacon__CompleteCustomMessageStructure() as Object
   regex = createObject("roRegex", "\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3} \[beacon\.signal\.custom\] \|[A-Za-z]+Complete ---------> Duration\(-?\d+ ms\)", "i")
 
   return m.assertTrue(regex.isMatch(response.message))
+end function
+
+function TestCase__SendBeacon__InitiateCustomDisabled() as Object
+  self = getGlobalAA()
+  beaconId = "AppLaunchCustom"
+  beaconType = "Initiate"
+
+  self.top.customBeaconsEnabled = false
+  response = self.top.callFunc("sendBeacon", beaconId, beaconType)
+
+  return m.assertEqual(response.status, "error")
 end function

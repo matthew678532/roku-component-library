@@ -3,6 +3,7 @@
   <script type="text/brightscript" uri="ChannelPerformanceComponent.brs" />
 
   <interface>
+    <field id="customBeaconsEnabled" type="boolean" value="true" />
     <field id="beaconIds" type="assocArray" />
     <field id="beaconTypes" type="assocArray" />
 

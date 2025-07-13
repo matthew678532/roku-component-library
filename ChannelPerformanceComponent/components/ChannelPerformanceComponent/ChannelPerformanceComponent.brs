@@ -1,4 +1,5 @@
 sub init()
+  m.msSinceAppLaunchInitiate = createObject("roDateTime").asSeconds() * 1000
   m.scene = m.top.getScene()
 
   m.beaconIds = {
@@ -75,9 +76,15 @@ function sendBeacon(beaconId as String, beaconType as String) as Object
       return getSendBeaconResponseObject("success", "Beacon sent by OS", { beaconId: beaconId, beaconType: beaconType })
     end if
 
+    if not m.top.customBeaconsEnabled
+      print "[ChannelPerformanceComponent] Custom beacons are disabled, not sending custom beacon (" + beaconId + beaconType + ")"
+
+      return getSendBeaconResponseObject("error", "Custom beacons are disabled", { beaconId: beaconId, beaconType: beaconType })
+    end if
+
     initiateString = "Timebase({timebase} ms)"
 
-    returnString = getBaseBeaconString(beaconDateTime, beaconId, beaconType) + initiateString.replace("{timebase}", timebase.toStr())
+    returnString = getBaseBeaconString(beaconDateTime, beaconId, beaconType) + initiateString.replace("{timebase}", (timebase - m.msSinceAppLaunchInitiate).toStr())
     print returnString
     return getSendBeaconResponseObject("success", returnString, { beaconId: beaconId, beaconType: beaconType })
   else
@@ -93,6 +100,12 @@ function sendBeacon(beaconId as String, beaconType as String) as Object
       resetBeacon(beaconId)
 
       return getSendBeaconResponseObject("success", "Beacon sent by OS", { beaconId: beaconId, beaconType: beaconType })
+    end if
+
+    if not m.top.customBeaconsEnabled
+      print "[ChannelPerformanceComponent] Custom beacons are disabled, not sending custom beacon (" + beaconId + beaconType + ")"
+
+      return getSendBeaconResponseObject("error", "Custom beacons are disabled", { beaconId: beaconId, beaconType: beaconType })
     end if
 
     completeString = "Duration({duration} ms)"
