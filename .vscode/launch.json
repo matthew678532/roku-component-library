@@ -17,6 +17,10 @@
           "src": "../ChannelPerformanceComponent/components/ChannelPerformanceComponent/**/*",
           "dest": "components/ChannelPerformanceComponent/"
         },
+        {
+          "src": "../ConsoleComponent/components/ConsoleComponent/**/*",
+          "dest": "components/ConsoleComponent/"
+        },
         "!source/testFramework/**/*"
       ],
       "retainStagingFolder": true
@@ -35,6 +39,10 @@
         "manifest",
         {
           "src": "../ChannelPerformanceComponent/components/**/*",
+          "dest": "components/"
+        },
+        {
+          "src": "../ConsoleComponent/components/**/*",
           "dest": "components/"
         }
       ],
